@@ -19,6 +19,9 @@ build/
 # Docker
 *.log
 
+# Environment
+.env
+
 # IDE
 .vscode/
 .idea/
