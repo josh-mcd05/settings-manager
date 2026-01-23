@@ -72,4 +72,5 @@ def delete_setting(uid: str):
         operations.delete_setting(uid)
         return None
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete setting: {str(e)}")
+        ## Do nothing, still raises 204 even with invalid ID
+        return None

@@ -44,7 +44,14 @@ function App() {
   const handleDelete = async (id: string) => {
     try {
       await settingsApi.delete(id);
-      loadSettings();
+
+      const response = await settingsApi.getAll(page, 10);
+      setSettings(response.data.data);
+      setTotalPages(response.data.pagination.total_pages);
+
+      if (response.data.data.length === 0 && page > 1) {
+        setPage(page - 1);
+      }
     } catch (error) {
       console.error('Error deleting setting:', error);
       alert('Failed to delete setting');

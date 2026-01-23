@@ -17,7 +17,7 @@ export const SettingsTable = ({
   totalPages,
   onPageChange,
 }: SettingsTableProps) => {
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this setting?')) {
       onDelete(id);
     }
