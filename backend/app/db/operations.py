@@ -3,6 +3,7 @@ import json
 from typing import Optional, Tuple, List
 from app.db.connection import get_db_connection
 from app.models.setting import Setting
+from psycopg2 import errors as pg_errors 
 
 def create_setting(data: dict) -> Setting:
     ## Creates a new setting and uploads to db
@@ -48,48 +49,64 @@ def get_all_settings(page: int = 1, limit: int = 10) -> Tuple[List[Setting], int
 
 def get_setting_by_id(setting_id: str) -> Optional[Setting]:
     ## Gets a specific setting using the ID
-    with get_db_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT id, data, created_at, updated_at
-                FROM settings
-                WHERE id = %s
-                """,
-                (setting_id,)
-            )
-            result = cur.fetchone()
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, data, created_at, updated_at
+                    FROM settings
+                    WHERE id = %s
+                    """,
+                    (setting_id,)
+                )
+                result = cur.fetchone()
             
-            if result:
-                return Setting(**result)
-            return None
+                if result:
+                    return Setting(**result)
+                return None
+    except pg_errors.InvalidTextRepresentation:
+        return None
+    except Exception as e:
+        raise 
+
 
 def update_setting(setting_id: str, data: dict) -> Optional[Setting]:
     ## Updates an existing setting using the ID
-    with get_db_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                UPDATE settings
-                SET data = %s, updated_at = CURRENT_TIMESTAMP
-                WHERE id = %s
-                RETURNING id, data, created_at, updated_at
-                """,
-                (json.dumps(data), setting_id)
-            )
-            result = cur.fetchone()
-            
-            if result:
-                return Setting(**result)
-            return None
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE settings
+                    SET data = %s, updated_at = CURRENT_TIMESTAMP
+                    WHERE id = %s
+                    RETURNING id, data, created_at, updated_at
+                    """,
+                    (json.dumps(data), setting_id)
+                )
+                result = cur.fetchone()
+                
+                if result:
+                    return Setting(**result)
+                return None
+    except pg_errors.InvalidTextRepresentation:
+        return None
+    except Exception as e:
+        raise
 
 def delete_setting(setting_id: str) -> bool:
     ## Deletes a setting using the ID
-    with get_db_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                "DELETE FROM settings WHERE id = %s",
-                (setting_id,)
-            )
-            # Always return True for idempotency
-            return True
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM settings WHERE id = %s",
+                    (setting_id,)
+                )
+                # Always return True for idempotency
+                return True
+    except pg_errors.InvalidTextRepresentation:
+        return True
+    except Exception as e:
+        raise
