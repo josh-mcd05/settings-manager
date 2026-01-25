@@ -13,7 +13,9 @@ Can view API information at "http://localhost:8000/docs"
 To run backend tests:
 cd to backend folder
 make sure python 3.12 is installed and run "python3.12 -m venv venv" to set up virtual environment
-run "./run_tests.sh" to run tests. This will activate virtual environment, set up docker container and test database and run tests.
+activate venv with "source venv/bin/activate" on mac/unix or "./venv/Scripts/Activate.ps1" on powershell
+run "pip install -r requirements.txt" to install all requirements
+run "./run_tests.sh" to run tests. This will set up docker container and test database and run tests.
 
 
 To run frontend tests:
