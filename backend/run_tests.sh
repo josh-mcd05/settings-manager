@@ -21,6 +21,7 @@ if [ -z "$VIRTUAL_ENV" ]; then
     echo "⚠️  Virtual environment not activated!"
     echo "Activating now..."
     source venv/bin/activate
+    pip install -r requirements.txt
 fi
 
 # Check if Docker DB is running
