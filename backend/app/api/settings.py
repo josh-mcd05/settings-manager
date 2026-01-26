@@ -8,6 +8,7 @@ from app.models.setting import (
 )
 from app.db import operations
 import math
+from psycopg2 import errors as pg_errors 
 
 router = APIRouter()
 
@@ -71,6 +72,9 @@ def delete_setting(uid: str):
     try:
         operations.delete_setting(uid)
         return None
-    except Exception as e:
-        ## Do nothing, still raises 204 even with invalid ID
+    except pg_errors.InvalidTextRepresentation:
+        ## Invalid ID, still raises 204
         return None
+    except Exception as e:
+        ## Catches exception to raise 500 if anything else
+        raise HTTPException(status_code=500, detail=f"Failed to delete setting: {str(e)}")

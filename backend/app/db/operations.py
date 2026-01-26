@@ -107,6 +107,6 @@ def delete_setting(setting_id: str) -> bool:
                 # Always return True for idempotency
                 return True
     except pg_errors.InvalidTextRepresentation:
-        return True
+        raise
     except Exception as e:
         raise
